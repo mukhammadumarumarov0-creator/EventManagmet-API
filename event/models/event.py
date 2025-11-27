@@ -10,6 +10,7 @@ def not_past(value):
     if value < timezone.now():
         raise ValidationError("Data is expired")
 
+
 class Event(models.Model):
     category_choice = [
         (SOCIAL, SOCIAL),
@@ -19,11 +20,12 @@ class Event(models.Model):
         (OTHER , OTHER),
         ]
     user=models.ForeignKey(User,on_delete=models.CASCADE,related_name='events') # event creater holos
+    title=models.CharField(max_length=200,null=True)
     description=models.CharField(max_length=500,null=True,blank=True)
-    date=models.DateTimeField(validators=[not_past])
+    date=models.DateTimeField(validators=[not_past],null=True,blank=True)
     address=models.CharField(max_length=500)
     category=models.CharField(max_length=20,choices=category_choice,default=SOCIAL)
-    seats_count=models.PositiveIntegerField()
+    seats_count=models.PositiveIntegerField(null=True,blank=True)
 
     updated_at=models.DateTimeField(auto_now=True)
     created_at=models.DateTimeField(auto_now_add=True)
@@ -33,12 +35,11 @@ class Event(models.Model):
     
     def is_expired(self):
         if self.date > timezone.now():
-            return False #vaqti bor
-        return True #vaqti otib keti
+            return False #vaqti bor 
+        return True #vaqti otib keti expired bolib keti
   
     
 class Ticket(models.Model):
-    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name='tickets') # lyboy user
     event=models.ForeignKey(Event,on_delete=models.CASCADE,related_name="tickets")
     price=models.IntegerField()
     count=models.PositiveIntegerField(default=0)
@@ -59,12 +60,28 @@ class Ticket(models.Model):
             self.count -= count
             self.save(update_fields=['count'])
             return True # agar True qaytsa seat minus boldi  
+        return False
     
+    def is_expired(self):
+        if not self.event.is_expired():
+            return True #vaqti bor
+        return False # otib keti
+
 
 class Booking(models.Model):
     ticket=models.ForeignKey(Ticket,on_delete=models.CASCADE,related_name="bookings")
+    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name='bookings')
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.ticket.user.username}'s booking"
+    
+    def decrease_seats_count(self, n=1):
+        return self.ticket.decrease_count(n)
+    
+    def is_expired_booking(self):
+        if self.ticket.is_expired():
+            return True #vaqti bor
+        return False #vaqti otib keti
+

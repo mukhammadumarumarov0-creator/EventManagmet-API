@@ -64,7 +64,7 @@ class UserConfirmation(models.Model):
         return f"{self.user.username}'s code"
 
     def save(self,*args, **kwargs):
-        self.expired_time=timezone.now()+timezone.timedelta(minutes=4)
+        self.expired_time=timezone.now()+timezone.timedelta(minutes=2)
         return super().save(*args, **kwargs)
     
     def is_expired(self):
