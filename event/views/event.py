@@ -73,7 +73,6 @@ class AllEventsAPIView(ListAPIView):
 
     filterset_fields = ['category', 'address']
     search_fields = ['title', 'description']
-
     ordering_fields = ['date', 'created_at']
 
 

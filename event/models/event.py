@@ -19,7 +19,7 @@ class Event(models.Model):
         (ONLINE, ONLINE),
         (OTHER , OTHER),
         ]
-    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name='events') # event creater holos
+    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name='events')
     title=models.CharField(max_length=200,null=True)
     description=models.CharField(max_length=500,null=True,blank=True)
     date=models.DateTimeField(validators=[not_past],null=True,blank=True)

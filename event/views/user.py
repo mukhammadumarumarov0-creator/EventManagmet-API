@@ -1,5 +1,4 @@
 from rest_framework.views import APIView
-from rest_framework.response import Response
 from event.models import User,UserConfirmation,VERIFIED,DONE
 from event.utils import MyResponce,send_code_to_email
 from event.serializers import RegistrationSerializer,ValidationSerializer,FullUpdateSerializer,LoginSerializer,UpdatePasswordSerializer
